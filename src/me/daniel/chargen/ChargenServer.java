@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ChargenServer implements Runnable {
     
@@ -44,18 +43,12 @@ public class ChargenServer implements Runnable {
     //Used as a disconnected client cleanup thread
     public void run() {
         while(running) {
-            //Collect the disconnected clients into one list so they
-            //can be removed from the clients list and ultimately be
-            //gc'ed
-            //Done this way to ConcurrentModificationException
-            List<ClientThread> dead = clients.stream()
-                                             .filter(ClientThread::done)
-                                             .collect(Collectors.toList());
-            dead.forEach(clients::remove);
-            
-            if(dead.size() > 0) {
-                System.out.printf("\t[-] %d client(s) disconnected.\n", dead.size());
-            }
+        	//Use new fancy jdk 8 features to remove from the list
+        	//without throwing a ConcurrentModificationException
+        	boolean clients_dead = clients.removeIf(ClientThread::done);
+        	if(clients_dead) {
+        		System.out.printf("\t[-] Disconnected dead client(s).\n");
+        	}
             
             try { //don't eat cpu time
                 Thread.sleep(100);
