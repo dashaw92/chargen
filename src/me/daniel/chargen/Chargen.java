@@ -32,8 +32,7 @@ public final class Chargen {
     public Chargen(String chars, int width) {
         //sanity check, ensure arguments are valid
         if(chars.trim().length() < 1) chars = DEFAULT_CHARS;
-        if(width < 16) width = DEFAULT_WIDTH;
-        if(width > DEFAULT_CHARS.length()) width = DEFAULT_CHARS.length() / 2;
+        if(width < 1 || width > chars.length()) width = chars.length() / 2;
         
         this.chars = chars;
         this.width = width;
